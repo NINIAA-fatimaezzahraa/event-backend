@@ -1,8 +1,32 @@
 # Compiled class file
 *.class
 
-# Log file
+# Maven / Gradle
+.mvn/
+!**/mvn/wrapper/**
+
+target/
+build/
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+*.iws
+
+# Eclipse project files
+*.classpath
+*.project
+*.settings/
+
+# VS Code
+.vscode/
+
+# Logs
 *.log
+logs/
 
 # BlueJ files
 *.ctxt
@@ -22,3 +46,16 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Lombok generated files
+.lombok/
