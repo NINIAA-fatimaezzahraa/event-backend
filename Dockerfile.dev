@@ -1,0 +1,31 @@
+# Stage 1: Build environment
+FROM maven:3.8.4-openjdk-17 AS build
+WORKDIR /app
+
+# Copy the Maven wrapper and source code to the container
+COPY . .
+
+# Make the Maven wrapper executable
+RUN chmod +x ./mvnw
+
+# Install dependencies without running tests
+RUN ./mvnw dependency:resolve
+
+# Use an official JDK image as the base
+FROM openjdk:17-jdk-alpine
+
+# Set a working directory
+WORKDIR /app
+
+# Copy the source code from the build stage (including mvnw)
+COPY --from=build /app /app
+
+# Install Maven
+RUN apk add --no-cache maven
+
+# Expose the port Spring Boot runs on
+EXPOSE 8080
+
+# Run Spring Boot with live reloading using devtools
+CMD ["./mvnw", "spring-boot:run"]
+
