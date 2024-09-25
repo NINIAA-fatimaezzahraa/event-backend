@@ -1,4 +1,4 @@
--- event_db.users definition
+-- event-db.users definition
 DROP TABLE IF EXISTS users;
 
 create table users (
