@@ -5,7 +5,7 @@ import com.oclock.event_backend.domain.User;
 import com.oclock.event_backend.dto.AuthRequest;
 import com.oclock.event_backend.dto.AuthResponse;
 import com.oclock.event_backend.dto.RegisterRequest;
-import com.oclock.event_backend.dto.RegisterResponse;
+import com.oclock.event_backend.dto.ProfileResponse;
 import com.oclock.event_backend.exception.FunctionalException;
 import com.oclock.event_backend.mapper.UserMapper;
 import com.oclock.event_backend.repository.UserRepository;
@@ -68,7 +68,7 @@ public class AuthServiceTest {
                 .lastName("Doe")
                 .build();
 
-        RegisterResponse response = RegisterResponse.builder()
+        ProfileResponse response = ProfileResponse.builder()
                 .email("alpha@gmail.com")
                 .firstName("John")
                 .lastName("Doe")
@@ -87,7 +87,7 @@ public class AuthServiceTest {
         when(userRepository.save(any())).thenReturn(user);
         when(userMapper.toDto(any())).thenReturn(response);
 
-        RegisterResponse registerResponse = authService.registerUser(request);
+        ProfileResponse registerResponse = authService.registerUser(request);
         assertNotNull(registerResponse);
         assertEquals("alpha@gmail.com", registerResponse.email());
         verify(userRepository).save(any(User.class));

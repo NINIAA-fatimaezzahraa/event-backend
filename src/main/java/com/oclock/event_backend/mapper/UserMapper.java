@@ -3,7 +3,7 @@ package com.oclock.event_backend.mapper;
 import com.oclock.event_backend.domain.Role;
 import com.oclock.event_backend.domain.User;
 import com.oclock.event_backend.dto.RegisterRequest;
-import com.oclock.event_backend.dto.RegisterResponse;
+import com.oclock.event_backend.dto.ProfileResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -24,8 +24,8 @@ public class UserMapper {
                 .build();
     }
 
-    public RegisterResponse toDto(User user) {
-        return RegisterResponse.builder()
+    public ProfileResponse toDto(User user) {
+        return ProfileResponse.builder()
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
