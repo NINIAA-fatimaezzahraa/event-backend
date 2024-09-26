@@ -5,6 +5,9 @@ import com.oclock.event_backend.dto.AuthRequest;
 import com.oclock.event_backend.dto.AuthResponse;
 import com.oclock.event_backend.dto.RegisterRequest;
 import com.oclock.event_backend.dto.RegisterResponse;
+import com.oclock.event_backend.exception.EmptyInputException;
+import com.oclock.event_backend.exception.FunctionalException;
+import com.oclock.event_backend.exception.ResourceNotFoundException;
 import com.oclock.event_backend.mapper.UserMapper;
 import com.oclock.event_backend.repository.UserRepository;
 import com.oclock.event_backend.util.JwtUtil;
@@ -27,37 +30,49 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
     private UserRepository userRepository;
     private UserMapper userMapper;
     private JwtUtil jwtUtil;
-
     private RefreshTokenService refreshTokenService;
-
     private PasswordEncoder passwordEncoder;
 
     @Override
     public RegisterResponse registerUser(RegisterRequest registerRequest) {
-        if (registerRequest.email() == null || registerRequest.password() == null) {
-            throw new IllegalArgumentException("Email and Password are required.");
+        if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
+            throw new EmptyInputException("Email is required.");
+        }
+        if (registerRequest.password() == null || registerRequest.password().isEmpty()) {
+            throw new EmptyInputException("Password is required.");
+        }
+
+        if (userRepository.findByEmail(registerRequest.email()).isPresent()) {
+            throw new FunctionalException("User with email= " +registerRequest.email()+  " already exists.");
         }
 
         User user = userMapper.toEntity(registerRequest);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         userRepository.save(user);
 
         return userMapper.toDto(user);
     }
 
     public AuthResponse loginUser(AuthRequest authRequest) {
-        Optional<User> optionalUser = userRepository.findByEmail(authRequest.email());
+        if (authRequest.email() == null || authRequest.email().isEmpty()) {
+            throw new EmptyInputException("Email is required.");
+        }
+        if (authRequest.password() == null || authRequest.password().isEmpty()) {
+            throw new EmptyInputException("Password is required.");
+        }
 
-        if (optionalUser.isEmpty() || !optionalUser.get().isActive()) {
-            throw new IllegalArgumentException("User not found or inactive.");
+        Optional<User> optionalUser = userRepository.findByEmail(authRequest.email());
+        if (optionalUser.isEmpty()) {
+            throw new FunctionalException("User not found.");
         }
 
         User user = optionalUser.get();
+        if (!user.isActive()) {
+            throw new FunctionalException("User is inactive.");
+        }
 
         if (!jwtUtil.checkPassword(authRequest.password(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new FunctionalException("Invalid credentials.");
         }
 
         user.setLastLoginDate(LocalDateTime.now());
@@ -75,6 +90,6 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
 }
