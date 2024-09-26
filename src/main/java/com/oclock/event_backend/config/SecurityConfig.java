@@ -1,5 +1,6 @@
 package com.oclock.event_backend.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private static final String[] ALLOWED_LIST_URL = {
             "/api/auth/**",
@@ -41,6 +44,14 @@ public class SecurityConfig {
                 .requestMatchers(ALLOWED_LIST_URL).permitAll()
                 // .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(exceptions -> exceptions
+                .accessDeniedHandler(customAccessDeniedHandler)
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{\"message\": \"Unauthorized: Please log in first.\"}");
+                    response.getWriter().flush();
+                })
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
