@@ -4,7 +4,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record RegisterResponse(
+public record ProfileResponse(
     String email,
     String firstName,
     String lastName,

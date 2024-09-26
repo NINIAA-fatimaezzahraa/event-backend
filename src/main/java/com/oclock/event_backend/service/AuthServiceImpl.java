@@ -4,7 +4,7 @@ import com.oclock.event_backend.domain.User;
 import com.oclock.event_backend.dto.AuthRequest;
 import com.oclock.event_backend.dto.AuthResponse;
 import com.oclock.event_backend.dto.RegisterRequest;
-import com.oclock.event_backend.dto.RegisterResponse;
+import com.oclock.event_backend.dto.ProfileResponse;
 import com.oclock.event_backend.exception.EmptyInputException;
 import com.oclock.event_backend.exception.FunctionalException;
 import com.oclock.event_backend.exception.ResourceNotFoundException;
@@ -34,7 +34,7 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public RegisterResponse registerUser(RegisterRequest registerRequest) {
+    public ProfileResponse registerUser(RegisterRequest registerRequest) {
         if (registerRequest.email() == null || registerRequest.email().isEmpty()) {
             throw new EmptyInputException("Email is required.");
         }
