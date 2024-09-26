@@ -41,8 +41,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         }
 
         Optional<RefreshToken> optionalToken = findByToken(refreshToken);
+        if (optionalToken.isEmpty()) {
+            throw new FunctionalException("Invalid refresh token.");
+        }
 
-        if (optionalToken.get().getExpiryDate().isBefore(Instant.now())) {
+        RefreshToken token = optionalToken.get();
+        if (token.getExpiryDate().isBefore(Instant.now())) {
             throw new FunctionalException("Expired refresh token.");
         }
 
