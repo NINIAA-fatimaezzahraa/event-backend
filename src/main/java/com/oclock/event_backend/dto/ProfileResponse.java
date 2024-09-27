@@ -5,9 +5,10 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ProfileResponse(
-    String email,
-    String firstName,
-    String lastName,
-    boolean isActive,
-    LocalDateTime createdDate
+        Long ProfileId,
+        String email,
+        String firstName,
+        String lastName,
+        boolean isActive,
+        LocalDateTime createdDate
 ) { }

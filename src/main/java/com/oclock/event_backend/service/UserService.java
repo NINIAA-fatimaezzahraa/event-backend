@@ -11,6 +11,7 @@ public interface UserService {
     String getAuthenticatedUserEmail(HttpServletRequest request);
     ProfileResponse getUserProfileByEmail(String email);
     Set<ProfileResponse> getAllUsers();
+    void deleteUserById(Long userId);
     Set<ProfileResponse> getUsersByEventIdForManager(Long eventId, String managerEmail);
     ProfileResponse updateUserProfile(String email, ProfileRequest request);
     void updatePassword(String email, UpdatePasswordRequest newPassword);

@@ -26,15 +26,22 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('ROLE_PARTICIPANT')")
+    @PreAuthorize("hasRole('ROLE_PARTICIPANT') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProfileResponse> getOwnProfile(HttpServletRequest request) {
         String email = userService.getAuthenticatedUserEmail(request);
         ProfileResponse response = userService.getUserProfileByEmail(email);
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> deleteUserAccount(@PathVariable Long userId) {
+        userService.deleteUserById(userId);
+        return ResponseEntity.ok("User deleted successfully.");
+    }
+
     @PutMapping("/profile")
-    @PreAuthorize("hasRole('ROLE_PARTICIPANT') or hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_PARTICIPANT') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ProfileResponse> updateProfile(
             @RequestBody ProfileRequest request, HttpServletRequest httpServletRequest) {
         String email = userService.getAuthenticatedUserEmail(httpServletRequest);
