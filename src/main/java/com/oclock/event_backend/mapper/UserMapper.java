@@ -2,7 +2,7 @@ package com.oclock.event_backend.mapper;
 
 import com.oclock.event_backend.domain.Role;
 import com.oclock.event_backend.domain.User;
-import com.oclock.event_backend.dto.RegisterRequest;
+import com.oclock.event_backend.dto.ProfileRequest;
 import com.oclock.event_backend.dto.ProfileResponse;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class UserMapper {
-    public User toEntity(RegisterRequest registerRequest) {
+    public User toEntity(ProfileRequest registerRequest) {
         Role role = registerRequest.role() != null ? Role.valueOf(registerRequest.role().toUpperCase()) : Role.PARTICIPANT;
 
         return User.builder()
