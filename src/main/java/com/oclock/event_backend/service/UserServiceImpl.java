@@ -59,6 +59,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+        userRepository.delete(user);
+    }
+
+    @Override
     public ProfileResponse updateUserProfile(String email, ProfileRequest request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
