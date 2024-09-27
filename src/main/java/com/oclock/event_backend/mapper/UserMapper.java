@@ -26,6 +26,7 @@ public class UserMapper {
 
     public ProfileResponse toDto(User user) {
         return ProfileResponse.builder()
+                .ProfileId(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
