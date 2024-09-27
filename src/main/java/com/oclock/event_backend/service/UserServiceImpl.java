@@ -66,6 +66,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserStatus(Long userId, boolean isActive) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        user.setActive(isActive);
+        userRepository.save(user);
+    }
+
+    @Override
     public ProfileResponse updateUserProfile(String email, ProfileRequest request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
