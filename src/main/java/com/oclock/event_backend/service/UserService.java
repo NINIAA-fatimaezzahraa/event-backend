@@ -12,6 +12,7 @@ public interface UserService {
     ProfileResponse getUserProfileByEmail(String email);
     Set<ProfileResponse> getAllUsers();
     void deleteUserById(Long userId);
+    void updateUserStatus(Long userId, boolean isActive);
     Set<ProfileResponse> getUsersByEventIdForManager(Long eventId, String managerEmail);
     ProfileResponse updateUserProfile(String email, ProfileRequest request);
     void updatePassword(String email, UpdatePasswordRequest newPassword);

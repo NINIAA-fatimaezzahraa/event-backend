@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Set;
 
 @RestController
@@ -38,6 +37,18 @@ public class UserController {
     public ResponseEntity<String> deleteUserAccount(@PathVariable Long userId) {
         userService.deleteUserById(userId);
         return ResponseEntity.ok("User deleted successfully.");
+    }
+
+    @PutMapping("/{userId}/activate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> activateDeactivateUserAccount(
+            @PathVariable Long userId,
+            @RequestParam Boolean isActive
+    ) {
+        userService.updateUserStatus(userId, isActive);
+
+        String message = isActive ? "User activated successfully." : "User deactivated successfully.";
+        return ResponseEntity.ok(message);
     }
 
     @PutMapping("/profile")
