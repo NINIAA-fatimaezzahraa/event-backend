@@ -4,7 +4,7 @@ import com.oclock.event_backend.domain.RefreshToken;
 import com.oclock.event_backend.domain.User;
 import com.oclock.event_backend.dto.AuthRequest;
 import com.oclock.event_backend.dto.AuthResponse;
-import com.oclock.event_backend.dto.RegisterRequest;
+import com.oclock.event_backend.dto.ProfileRequest;
 import com.oclock.event_backend.dto.ProfileResponse;
 import com.oclock.event_backend.exception.FunctionalException;
 import com.oclock.event_backend.mapper.UserMapper;
@@ -61,7 +61,7 @@ public class AuthServiceTest {
 
     @Test
     void testRegisterUser_Success() {
-        RegisterRequest request = RegisterRequest.builder()
+        ProfileRequest request = ProfileRequest.builder()
                 .email("alpha@gmail.com")
                 .password("password123")
                 .firstName("John")
@@ -95,7 +95,7 @@ public class AuthServiceTest {
 
     @Test
     void testRegisterUser_ThrowsFunctionalException() {
-        RegisterRequest request = RegisterRequest.builder()
+        ProfileRequest request = ProfileRequest.builder()
                 .email("alpha@gmail.com")
                 .password("password123")
                 .build();

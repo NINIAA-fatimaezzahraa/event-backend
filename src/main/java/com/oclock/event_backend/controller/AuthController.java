@@ -2,7 +2,7 @@ package com.oclock.event_backend.controller;
 
 import com.oclock.event_backend.dto.AuthRequest;
 import com.oclock.event_backend.dto.AuthResponse;
-import com.oclock.event_backend.dto.RegisterRequest;
+import com.oclock.event_backend.dto.ProfileRequest;
 import com.oclock.event_backend.dto.ProfileResponse;
 import com.oclock.event_backend.service.RefreshTokenService;
 import com.oclock.event_backend.service.AuthService;
@@ -19,7 +19,7 @@ public class AuthController {
     private RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
-    public ResponseEntity<ProfileResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ProfileResponse> register(@RequestBody ProfileRequest registerRequest) {
         ProfileResponse response = authService.registerUser(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
