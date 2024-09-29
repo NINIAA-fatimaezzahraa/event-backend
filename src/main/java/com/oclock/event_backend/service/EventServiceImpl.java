@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,6 +83,15 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
 
         return eventMapper.toDto(event);
+    }
+
+    @Override
+    public Set<EventDto> getAllEvents() {
+        List<Event> event = eventRepository.findAll();
+
+        return event.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toSet());
     }
 
     public User getUserByUsername(String email) throws UsernameNotFoundException {
