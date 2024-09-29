@@ -27,11 +27,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AuthServiceImpl implements UserDetailsService, AuthService {
 
-    private UserRepository userRepository;
-    private UserMapper userMapper;
-    private JwtUtil jwtUtil;
-    private RefreshTokenService refreshTokenService;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ProfileResponse registerUser(ProfileRequest registerRequest) {
