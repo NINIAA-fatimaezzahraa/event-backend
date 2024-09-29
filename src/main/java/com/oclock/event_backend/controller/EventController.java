@@ -8,10 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/events")
@@ -25,5 +22,11 @@ public class EventController {
     public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto,  @AuthenticationPrincipal UserDetails userDetails) {
         EventDto event = eventService.createEvent(eventDto, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
+    }
+
+    @GetMapping()
+    public ResponseEntity<EventDto> getEventById(@RequestParam Long eventId) {
+        EventDto event = eventService.getEventById(eventId);
+        return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 }

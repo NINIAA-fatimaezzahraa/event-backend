@@ -76,6 +76,14 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
+    public EventDto getEventById(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        return eventMapper.toDto(event);
+    }
+
     public User getUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
