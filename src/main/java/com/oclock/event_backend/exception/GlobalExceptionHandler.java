@@ -69,6 +69,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(CustomDatabaseException.class)
+    public ResponseEntity<ErrorResponse> handleCustomDatabaseException(CustomDatabaseException ex) {
+        logger.error("Database error occurred: {}", ex.getMessage());
+
+        ErrorResponse error = ErrorResponse
+                .builder()
+                .errorCode("DATABASE_ERROR")
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(FunctionalException.class)
     public ResponseEntity<ErrorResponse> handleFunctionalException(FunctionalException ex) {
         ErrorResponse error = ErrorResponse
@@ -85,7 +98,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse
                 .builder()
                 .errorCode("PERMISSION_ERROR")
-                .message("Access Denied: You don't have permission to access this resource.")
+                .message("Access Denied: You don't have permission to access this resource. " +ex)
                 .build();
 
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);

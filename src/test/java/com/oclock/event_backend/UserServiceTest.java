@@ -59,6 +59,7 @@ public class UserServiceTest {
     void tearDown() throws Exception {
         openMocks.close();
     }
+
     @Test
     void testGetAuthenticatedUserEmail() {
         String token = "Bearer mockToken";
@@ -320,7 +321,7 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findByEmail(currentEmail);
         verify(userRepository, times(1)).existsByEmail(newEmail);
-        verify(userRepository, never()).save(any());  // Assuming the email change happens after email verification
+        verify(userRepository, never()).save(any());
     }
 
     @Test
