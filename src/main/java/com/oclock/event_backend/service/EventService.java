@@ -8,4 +8,5 @@ public interface EventService {
     EventDto createEvent(EventDto eventDto, String managerUsername);
     EventDto getEventById(Long eventId);
     Set<EventDto> getAllEvents();
+    Set<EventDto> getEventsByCategory(String eventCategory);
 }

@@ -37,4 +37,11 @@ public class EventController {
         Set<EventDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
     }
+
+    @GetMapping("/category/{eventCategory}")
+    public ResponseEntity<Set<EventDto>> getEventsByCategory(@PathVariable String eventCategory) {
+        Set<EventDto> events = eventService.getEventsByCategory(eventCategory);
+        return ResponseEntity.ok(events);
+    }
+
 }
