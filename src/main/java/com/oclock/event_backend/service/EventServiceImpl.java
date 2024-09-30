@@ -1,9 +1,6 @@
 package com.oclock.event_backend.service;
 
-import com.oclock.event_backend.domain.Event;
-import com.oclock.event_backend.domain.EventLocation;
-import com.oclock.event_backend.domain.Sponsor;
-import com.oclock.event_backend.domain.User;
+import com.oclock.event_backend.domain.*;
 import com.oclock.event_backend.dto.EventDto;
 import com.oclock.event_backend.exception.CustomDatabaseException;
 import com.oclock.event_backend.exception.ResourceNotFoundException;
@@ -88,6 +85,17 @@ public class EventServiceImpl implements EventService {
     @Override
     public Set<EventDto> getAllEvents() {
         List<Event> event = eventRepository.findAll();
+
+        return event.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<EventDto> getEventsByCategory(String eventCategory) {
+        EventCategory category = EventCategory.fromDisplayName(eventCategory);
+
+        Set<Event> event = eventRepository.findByCategory(category);
 
         return event.stream()
                 .map(eventMapper::toDto)
