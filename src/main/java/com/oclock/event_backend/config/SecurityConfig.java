@@ -1,5 +1,8 @@
 package com.oclock.event_backend.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oclock.event_backend.dto.ErrorResponse;
+import com.oclock.event_backend.util.APIsErrorCodesConstants;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final ObjectMapper objectMapper;
 
     private static final String[] ALLOWED_LIST_URL = {
             "/api/auth/**",
@@ -49,7 +53,9 @@ public class SecurityConfig {
                 .accessDeniedHandler(customAccessDeniedHandler)
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write("{\"message\": \"Unauthorized: Please log in first.\"}");
+                    response.setContentType("application/json");
+                    ErrorResponse errorResponse = new ErrorResponse("UNAUTHORIZED", APIsErrorCodesConstants.UNAUTHORIZED);
+                    response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
                     response.getWriter().flush();
                 })
             )
