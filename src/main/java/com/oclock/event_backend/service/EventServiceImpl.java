@@ -148,6 +148,7 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
     public void deleteManagerEventById(Long eventId, UserDetails currentUser) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
@@ -157,6 +158,14 @@ public class EventServiceImpl implements EventService {
         }
 
         eventRepository.deleteById(eventId);
+    }
+
+    @Override
+    public void deleteEventById(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        eventRepository.delete(event);
     }
 
     private void validateDateRange(LocalDateTime startDate, LocalDateTime endDate) {
