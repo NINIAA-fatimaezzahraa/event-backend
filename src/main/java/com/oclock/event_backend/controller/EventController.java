@@ -44,9 +44,16 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/location/{eventLocation}")
-    public ResponseEntity<Set<EventDto>> getEventsByLocation(@PathVariable Long eventLocation) {
-        Set<EventDto> events = eventService.getEventsByLocation(eventLocation);
+    @GetMapping("/location/{eventLocationId}")
+    public ResponseEntity<Set<EventDto>> getEventsByLocation(@PathVariable Long eventLocationId) {
+        Set<EventDto> events = eventService.getEventsByLocation(eventLocationId);
         return ResponseEntity.ok(events);
     }
+
+    @GetMapping("/manager/{eventManagerId}")
+    public ResponseEntity<Set<EventDto>> getEventsByManager(@PathVariable Long eventManagerId) {
+        Set<EventDto> events = eventService.getEventsByManager(eventManagerId);
+        return ResponseEntity.ok(events);
+    }
+
 }

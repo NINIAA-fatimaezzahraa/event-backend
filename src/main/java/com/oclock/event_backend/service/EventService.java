@@ -10,4 +10,5 @@ public interface EventService {
     Set<EventDto> getAllEvents();
     Set<EventDto> getEventsByCategory(String eventCategory);
     Set<EventDto> getEventsByLocation(Long locationId);
+    Set<EventDto> getEventsByManager(Long managerId);
 }

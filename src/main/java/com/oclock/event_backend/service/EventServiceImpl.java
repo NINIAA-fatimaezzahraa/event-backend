@@ -122,6 +122,20 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public Set<EventDto> getEventsByManager(Long managerId) {
+        Optional<User> manager = userRepository.findById(managerId);
+        Set<Event> event = new HashSet<>();
+
+        if(manager.isPresent()) {
+            event = eventRepository.findByManager(manager.get());
+        }
+
+        return event.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toSet());
+    }
+
     public User getUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
