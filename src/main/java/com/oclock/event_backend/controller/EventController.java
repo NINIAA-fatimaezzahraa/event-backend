@@ -66,4 +66,14 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+    @DeleteMapping("/event/{eventId}")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<Void> deleteManagerEventById(
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal UserDetails currentUser
+    ) {
+        eventService.deleteManagerEventById(eventId, currentUser);
+        return ResponseEntity.noContent().build();
+    }
+
 }
