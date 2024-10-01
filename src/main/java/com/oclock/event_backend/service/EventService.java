@@ -15,4 +15,5 @@ public interface EventService {
     Set<EventDto> getEventsByManager(Long managerId);
     Set<EventDto> getEventsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     void deleteManagerEventById(Long eventId, UserDetails currentUser);
+    void deleteEventById(Long eventId);
 }

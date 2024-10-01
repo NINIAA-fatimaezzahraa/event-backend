@@ -76,4 +76,11 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/event-admin/{eventId}")
+    public ResponseEntity<Void> deleteAdminEventById(@PathVariable Long eventId) {
+        eventService.deleteEventById(eventId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
