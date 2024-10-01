@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -134,6 +135,25 @@ public class EventServiceImpl implements EventService {
         return event.stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<EventDto> getEventsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        validateDateRange(startDate, endDate);
+        Set<Event> events = eventRepository.findByStartDateBetween(startDate, endDate);
+        return events.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toSet());
+    }
+
+    private void validateDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        if (startDate == null || endDate == null) {
+            throw new FunctionalException("Both startDate and endDate must be provided.");
+        }
+
+        if (startDate.isAfter(endDate)) {
+            throw new FunctionalException("startDate must be before endDate.");
+        }
     }
 
     public User getUserByUsername(String email) throws UsernameNotFoundException {
