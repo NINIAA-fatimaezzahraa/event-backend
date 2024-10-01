@@ -9,4 +9,5 @@ public interface EventService {
     EventDto getEventById(Long eventId);
     Set<EventDto> getAllEvents();
     Set<EventDto> getEventsByCategory(String eventCategory);
+    Set<EventDto> getEventsByLocation(Long locationId);
 }
