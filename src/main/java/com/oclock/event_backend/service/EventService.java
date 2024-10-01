@@ -2,6 +2,7 @@ package com.oclock.event_backend.service;
 
 import com.oclock.event_backend.dto.EventDto;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public interface EventService {
@@ -11,4 +12,5 @@ public interface EventService {
     Set<EventDto> getEventsByCategory(String eventCategory);
     Set<EventDto> getEventsByLocation(Long locationId);
     Set<EventDto> getEventsByManager(Long managerId);
+    Set<EventDto> getEventsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 }

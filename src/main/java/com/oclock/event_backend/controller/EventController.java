@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @RestController
@@ -53,6 +54,15 @@ public class EventController {
     @GetMapping("/manager/{eventManagerId}")
     public ResponseEntity<Set<EventDto>> getEventsByManager(@PathVariable Long eventManagerId) {
         Set<EventDto> events = eventService.getEventsByManager(eventManagerId);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/date-range")
+    public ResponseEntity<Set<EventDto>> getEventsByDateRange(
+            @RequestParam(value = "startDate", required = false) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) LocalDateTime endDate
+    ) {
+        Set<EventDto> events = eventService.getEventsByDateRange(startDate, endDate);
         return ResponseEntity.ok(events);
     }
 
