@@ -44,4 +44,9 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+    @GetMapping("/location/{eventLocation}")
+    public ResponseEntity<Set<EventDto>> getEventsByLocation(@PathVariable Long eventLocation) {
+        Set<EventDto> events = eventService.getEventsByLocation(eventLocation);
+        return ResponseEntity.ok(events);
+    }
 }

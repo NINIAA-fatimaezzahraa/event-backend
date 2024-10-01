@@ -3,6 +3,7 @@ package com.oclock.event_backend.service;
 import com.oclock.event_backend.domain.*;
 import com.oclock.event_backend.dto.EventDto;
 import com.oclock.event_backend.exception.CustomDatabaseException;
+import com.oclock.event_backend.exception.FunctionalException;
 import com.oclock.event_backend.exception.ResourceNotFoundException;
 import com.oclock.event_backend.mapper.EventLocationMapper;
 import com.oclock.event_backend.mapper.EventMapper;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -95,7 +97,25 @@ public class EventServiceImpl implements EventService {
     public Set<EventDto> getEventsByCategory(String eventCategory) {
         EventCategory category = EventCategory.fromDisplayName(eventCategory);
 
+        if(category == null) {
+            throw new FunctionalException("The category '" + eventCategory + "' does not exist. Please provide a valid event category.");
+        }
+
         Set<Event> event = eventRepository.findByCategory(category);
+
+        return event.stream()
+                .map(eventMapper::toDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<EventDto> getEventsByLocation(Long locationId) {
+        Optional<EventLocation> location = eventLocationRepository.findById(locationId);
+        Set<Event> event = new HashSet<>();
+
+        if(location.isPresent()) {
+            event = eventRepository.findByLocation(location.get());
+        }
 
         return event.stream()
                 .map(eventMapper::toDto)
