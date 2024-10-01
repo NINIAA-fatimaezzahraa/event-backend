@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,6 +146,17 @@ public class EventServiceImpl implements EventService {
         return events.stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toSet());
+    }
+
+    public void deleteManagerEventById(Long eventId, UserDetails currentUser) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        if (!event.getManager().getEmail().equals(currentUser.getUsername())) {
+            throw new BadCredentialsException("You are not authorized to delete this event.");
+        }
+
+        eventRepository.deleteById(eventId);
     }
 
     private void validateDateRange(LocalDateTime startDate, LocalDateTime endDate) {
