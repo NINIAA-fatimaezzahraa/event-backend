@@ -7,16 +7,13 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Builder
-public record EventDto(
-        Long id,
+public record CreateEventDto(
         String title,
         String description,
-        LocalDateTime createdAt,
         LocalDateTime startDate,
         LocalDateTime endDate,
         EventLocationDto location,
         BigDecimal price,
         String category,
-        String manager,
         Set<SponsorDto> sponsors
 ) { }
