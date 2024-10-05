@@ -1,7 +1,9 @@
 package com.oclock.event_backend.service;
 
 import com.oclock.event_backend.domain.*;
-import com.oclock.event_backend.dto.EventDto;
+import com.oclock.event_backend.dto.CreateEventDto;
+import com.oclock.event_backend.dto.EventResponseDto;
+import com.oclock.event_backend.dto.UpdateEventDto;
 import com.oclock.event_backend.exception.CustomDatabaseException;
 import com.oclock.event_backend.exception.FunctionalException;
 import com.oclock.event_backend.exception.ResourceNotFoundException;
@@ -47,7 +49,7 @@ public class EventServiceImpl implements EventService {
 
     // TODO: Handling EventLocation and Sponsor exists and duplicate items
     @Override
-    public EventDto createEvent(EventDto request, String managerUsername) {
+    public EventResponseDto createEvent(CreateEventDto request, String managerUsername) {
         User manager = this.getUserByUsername(managerUsername);
 
         Event event = eventMapper.toEntity(request, manager);
@@ -80,7 +82,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDto getEventById(Long eventId) {
+    public EventResponseDto getEventById(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
 
@@ -88,7 +90,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Set<EventDto> getAllEvents() {
+    public Set<EventResponseDto> getAllEvents() {
         List<Event> event = eventRepository.findAll();
 
         return event.stream()
@@ -97,7 +99,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Set<EventDto> getEventsByCategory(String eventCategory) {
+    public Set<EventResponseDto> getEventsByCategory(String eventCategory) {
         EventCategory category = EventCategory.fromDisplayName(eventCategory);
 
         if(category == null) {
@@ -112,7 +114,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Set<EventDto> getEventsByLocation(Long locationId) {
+    public Set<EventResponseDto> getEventsByLocation(Long locationId) {
         Optional<EventLocation> location = eventLocationRepository.findById(locationId);
         Set<Event> event = new HashSet<>();
 
@@ -126,7 +128,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Set<EventDto> getEventsByManager(Long managerId) {
+    public Set<EventResponseDto> getEventsByManager(Long managerId) {
         Optional<User> manager = userRepository.findById(managerId);
         Set<Event> event = new HashSet<>();
 
@@ -140,12 +142,23 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Set<EventDto> getEventsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public Set<EventResponseDto> getEventsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         validateDateRange(startDate, endDate);
         Set<Event> events = eventRepository.findByStartDateBetween(startDate, endDate);
         return events.stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public EventResponseDto updateEventById(Long eventId, UpdateEventDto eventDto) {
+        Event eventDb = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        Event event = eventMapper.updateEntity(eventDb, eventDto);
+        eventRepository.save(event);
+
+        return eventMapper.toDto(event);
     }
 
     @Override

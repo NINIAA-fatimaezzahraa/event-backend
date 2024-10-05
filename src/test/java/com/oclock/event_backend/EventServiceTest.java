@@ -1,7 +1,8 @@
 package com.oclock.event_backend;
 
 import com.oclock.event_backend.domain.*;
-import com.oclock.event_backend.dto.EventDto;
+import com.oclock.event_backend.dto.CreateEventDto;
+import com.oclock.event_backend.dto.EventResponseDto;
 import com.oclock.event_backend.dto.EventLocationDto;
 import com.oclock.event_backend.dto.SponsorDto;
 import com.oclock.event_backend.exception.CustomDatabaseException;
@@ -59,7 +60,8 @@ public class EventServiceTest {
     private SponsorMapper sponsorMapper;
 
     private User mockManager;
-    private EventDto mockEventDto;
+    private CreateEventDto mockCreateEventDto;
+    private EventResponseDto mockEventResponse;
     private Event mockEvent;
     private EventLocationDto mockEventLocationDto;
     private EventLocation mockEventLocation;
@@ -109,7 +111,18 @@ public class EventServiceTest {
                 .logo("https://eventpic.com/logo.png")
                 .build();
 
-        mockEventDto = EventDto.builder()
+        mockCreateEventDto = CreateEventDto.builder()
+                .title("Tech Expo 2024")
+                .description("Annual tech conference.")
+                .startDate(LocalDateTime.of(2024, 10, 1, 9, 0))
+                .endDate(LocalDateTime.of(2024, 10, 3, 17, 0))
+                .location(mockEventLocationDto)
+                .price(new BigDecimal("199.99"))
+                .category("Technology")
+                .sponsors(Set.of(mockSponsorDto))
+                .build();
+
+        mockEventResponse = EventResponseDto.builder()
                 .title("Tech Expo 2024")
                 .description("Annual tech conference.")
                 .createdAt(LocalDateTime.now())
@@ -118,6 +131,7 @@ public class EventServiceTest {
                 .location(mockEventLocationDto)
                 .price(new BigDecimal("199.99"))
                 .category("Technology")
+                .manager(mockManager.getFirstName() + " " + mockManager.getLastName())
                 .sponsors(Set.of(mockSponsorDto))
                 .build();
 
@@ -144,15 +158,15 @@ public class EventServiceTest {
     @Test
     void testCreateEvent_SuccessfulCreation() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(mockManager));
-        when(eventMapper.toEntity(any(EventDto.class), any(User.class))).thenReturn(mockEvent);
+        when(eventMapper.toEntity(any(CreateEventDto.class), any(User.class))).thenReturn(mockEvent);
         when(eventLocationRepository.findById(mockEventLocationDto.id())).thenReturn(Optional.of(mockEventLocation));
         when(sponsorRepository.findById(mockSponsorDto.id())).thenReturn(Optional.of(mockSponsor));
         when(eventLocationMapper.toEntity(any(EventLocationDto.class))).thenReturn(mockEventLocation);
         when(sponsorMapper.toEntity(any(SponsorDto.class))).thenReturn(mockSponsor);
         when(eventRepository.save(any(Event.class))).thenReturn(mockEvent);
-        when(eventMapper.toDto(any(Event.class))).thenReturn(mockEventDto);
+        when(eventMapper.toDto(any(Event.class))).thenReturn(mockEventResponse);
 
-        EventDto result = eventService.createEvent(mockEventDto, managerEmail);
+        EventResponseDto result = eventService.createEvent(mockCreateEventDto, managerEmail);
 
         assertNotNull(result);
         assertEquals("Tech Expo 2024", result.title());
@@ -164,16 +178,16 @@ public class EventServiceTest {
     @Test
     void testCreateEvent_LocationNotFound_CreatesNewLocation() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(mockManager));
-        when(eventMapper.toEntity(any(EventDto.class), any(User.class))).thenReturn(mockEvent);
+        when(eventMapper.toEntity(any(CreateEventDto.class), any(User.class))).thenReturn(mockEvent);
         when(eventLocationRepository.findById(mockEventLocationDto.id())).thenReturn(Optional.empty());
         when(eventLocationRepository.save(any(EventLocation.class))).thenReturn(mockEventLocation);
         when(sponsorRepository.findById(mockSponsorDto.id())).thenReturn(Optional.of(mockSponsor));
         when(eventLocationMapper.toEntity(any(EventLocationDto.class))).thenReturn(mockEventLocation);
         when(sponsorMapper.toEntity(any(SponsorDto.class))).thenReturn(mockSponsor);
         when(eventRepository.save(any(Event.class))).thenReturn(mockEvent);
-        when(eventMapper.toDto(any(Event.class))).thenReturn(mockEventDto);
+        when(eventMapper.toDto(any(Event.class))).thenReturn(mockEventResponse);
 
-        EventDto result = eventService.createEvent(mockEventDto, managerEmail);
+        EventResponseDto result = eventService.createEvent(mockCreateEventDto, managerEmail);
 
         assertNotNull(result);
         assertEquals("Tech Expo 2024", result.title());
@@ -185,16 +199,16 @@ public class EventServiceTest {
     @Test
     void testCreateEvent_SponsorNotFound_CreatesNewSponsor() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(mockManager));
-        when(eventMapper.toEntity(any(EventDto.class), any(User.class))).thenReturn(mockEvent);
+        when(eventMapper.toEntity(any(CreateEventDto.class), any(User.class))).thenReturn(mockEvent);
         when(eventLocationRepository.findById(mockEventLocationDto.id())).thenReturn(Optional.of(mockEventLocation));
         when(sponsorRepository.findById(mockSponsorDto.id())).thenReturn(Optional.empty());
         when(sponsorRepository.save(any(Sponsor.class))).thenReturn(mockSponsor);
         when(eventLocationMapper.toEntity(any(EventLocationDto.class))).thenReturn(mockEventLocation);
         when(sponsorMapper.toEntity(any(SponsorDto.class))).thenReturn(mockSponsor);
         when(eventRepository.save(any(Event.class))).thenReturn(mockEvent);
-        when(eventMapper.toDto(any(Event.class))).thenReturn(mockEventDto);
+        when(eventMapper.toDto(any(Event.class))).thenReturn(mockEventResponse);
 
-        EventDto result = eventService.createEvent(mockEventDto, managerEmail);
+        EventResponseDto result = eventService.createEvent(mockCreateEventDto, managerEmail);
 
         assertNotNull(result);
         assertEquals("Tech Expo 2024", result.title());
@@ -206,11 +220,11 @@ public class EventServiceTest {
     @Test
     void testCreateEvent_DatabaseConstraintViolation() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(mockManager));
-        when(eventMapper.toEntity(any(EventDto.class), any(User.class))).thenReturn(mockEvent);
+        when(eventMapper.toEntity(any(CreateEventDto.class), any(User.class))).thenReturn(mockEvent);
         when(eventRepository.save(any(Event.class))).thenThrow(DataIntegrityViolationException.class);
 
         CustomDatabaseException thrown = assertThrows(CustomDatabaseException.class, () -> {
-            eventService.createEvent(mockEventDto, managerEmail);
+            eventService.createEvent(mockCreateEventDto, managerEmail);
         });
 
         assertEquals("Failed to save event due to database constraints", thrown.getMessage());
@@ -222,7 +236,7 @@ public class EventServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
-            eventService.createEvent(mockEventDto, managerEmail);
+            eventService.createEvent(mockCreateEventDto, managerEmail);
         });
 
         assertEquals("User not found with email: " + managerEmail, thrown.getMessage());

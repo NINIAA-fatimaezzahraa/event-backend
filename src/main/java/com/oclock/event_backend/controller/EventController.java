@@ -1,6 +1,8 @@
 package com.oclock.event_backend.controller;
 
-import com.oclock.event_backend.dto.EventDto;
+import com.oclock.event_backend.dto.CreateEventDto;
+import com.oclock.event_backend.dto.EventResponseDto;
+import com.oclock.event_backend.dto.UpdateEventDto;
 import com.oclock.event_backend.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,48 +24,58 @@ public class EventController {
 
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto,  @AuthenticationPrincipal UserDetails userDetails) {
-        EventDto event = eventService.createEvent(eventDto, userDetails.getUsername());
+    public ResponseEntity<EventResponseDto> createEvent(@RequestBody CreateEventDto eventDto, @AuthenticationPrincipal UserDetails userDetails) {
+        EventResponseDto event = eventService.createEvent(eventDto, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
     }
 
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventDto> getEventById(@PathVariable Long eventId) {
-        EventDto event = eventService.getEventById(eventId);
+    public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long eventId) {
+        EventResponseDto event = eventService.getEventById(eventId);
         return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 
     @GetMapping("/")
-    public ResponseEntity<Set<EventDto>> getAllEvents() {
-        Set<EventDto> events = eventService.getAllEvents();
-        return ResponseEntity.ok(events);
+    public ResponseEntity<Set<EventResponseDto>> getAllEvents() {
+        Set<EventResponseDto> events = eventService.getAllEvents();
+        return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
     @GetMapping("/category/{eventCategory}")
-    public ResponseEntity<Set<EventDto>> getEventsByCategory(@PathVariable String eventCategory) {
-        Set<EventDto> events = eventService.getEventsByCategory(eventCategory);
-        return ResponseEntity.ok(events);
+    public ResponseEntity<Set<EventResponseDto>> getEventsByCategory(@PathVariable String eventCategory) {
+        Set<EventResponseDto> events = eventService.getEventsByCategory(eventCategory);
+        return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
     @GetMapping("/location/{eventLocationId}")
-    public ResponseEntity<Set<EventDto>> getEventsByLocation(@PathVariable Long eventLocationId) {
-        Set<EventDto> events = eventService.getEventsByLocation(eventLocationId);
-        return ResponseEntity.ok(events);
+    public ResponseEntity<Set<EventResponseDto>> getEventsByLocation(@PathVariable Long eventLocationId) {
+        Set<EventResponseDto> events = eventService.getEventsByLocation(eventLocationId);
+        return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
     @GetMapping("/manager/{eventManagerId}")
-    public ResponseEntity<Set<EventDto>> getEventsByManager(@PathVariable Long eventManagerId) {
-        Set<EventDto> events = eventService.getEventsByManager(eventManagerId);
-        return ResponseEntity.ok(events);
+    public ResponseEntity<Set<EventResponseDto>> getEventsByManager(@PathVariable Long eventManagerId) {
+        Set<EventResponseDto> events = eventService.getEventsByManager(eventManagerId);
+        return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
     @GetMapping("/date-range")
-    public ResponseEntity<Set<EventDto>> getEventsByDateRange(
+    public ResponseEntity<Set<EventResponseDto>> getEventsByDateRange(
             @RequestParam(value = "startDate", required = false) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) LocalDateTime endDate
     ) {
-        Set<EventDto> events = eventService.getEventsByDateRange(startDate, endDate);
-        return ResponseEntity.ok(events);
+        Set<EventResponseDto> events = eventService.getEventsByDateRange(startDate, endDate);
+        return ResponseEntity.status(HttpStatus.OK).body(events);
+    }
+
+    @PatchMapping("/event/{eventId}")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<EventResponseDto> updateEventById(
+            @PathVariable Long eventId,
+            @RequestBody UpdateEventDto eventDto
+    ) {
+        EventResponseDto event = eventService.updateEventById(eventId, eventDto);
+        return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 
     @DeleteMapping("/event/{eventId}")
