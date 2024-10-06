@@ -1,8 +1,6 @@
 package com.oclock.event_backend.controller;
 
-import com.oclock.event_backend.dto.CreateEventDto;
-import com.oclock.event_backend.dto.EventResponseDto;
-import com.oclock.event_backend.dto.UpdateEventDto;
+import com.oclock.event_backend.dto.*;
 import com.oclock.event_backend.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +22,10 @@ public class EventController {
 
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public ResponseEntity<EventResponseDto> createEvent(@RequestBody CreateEventDto eventDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<EventResponseDto> createEvent(
+            @RequestBody CreateEventDto eventDto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         EventResponseDto event = eventService.createEvent(eventDto, userDetails.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(event);
     }
@@ -75,6 +76,16 @@ public class EventController {
             @RequestBody UpdateEventDto eventDto
     ) {
         EventResponseDto event = eventService.updateEventById(eventId, eventDto);
+        return ResponseEntity.status(HttpStatus.OK).body(event);
+    }
+
+    @PatchMapping("/event/{eventId}/sponsors")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<EventResponseDto> updateEventSponsors(
+            @PathVariable Long eventId,
+            @RequestBody Set<SponsorDto> sponsors
+    ) {
+        EventResponseDto event = eventService.updateSponsors(eventId, sponsors);
         return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 
