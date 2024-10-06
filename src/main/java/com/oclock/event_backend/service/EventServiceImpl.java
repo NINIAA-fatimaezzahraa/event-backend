@@ -3,6 +3,7 @@ package com.oclock.event_backend.service;
 import com.oclock.event_backend.domain.*;
 import com.oclock.event_backend.dto.CreateEventDto;
 import com.oclock.event_backend.dto.EventResponseDto;
+import com.oclock.event_backend.dto.SponsorDto;
 import com.oclock.event_backend.dto.UpdateEventDto;
 import com.oclock.event_backend.exception.CustomDatabaseException;
 import com.oclock.event_backend.exception.FunctionalException;
@@ -157,6 +158,31 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventMapper.updateEntity(eventDb, eventDto);
         eventRepository.save(event);
+
+        return eventMapper.toDto(event);
+    }
+
+    @Override
+    public EventResponseDto updateSponsors(Long eventId, Set<SponsorDto> sponsors) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        for (SponsorDto sponsorDto : sponsors) {
+            Sponsor sponsor = sponsorRepository.findById(sponsorDto.id())
+                    .orElseThrow(() -> new FunctionalException("Sponsor with id " + sponsorDto.id() + " does not exist."));
+
+            if (!event.getSponsors().contains(sponsor)) {
+                throw new FunctionalException("Sponsor with id " + sponsorDto.id() + " is not associated with this event.");
+            }
+        }
+
+        Set<Sponsor> updatedSponsors = sponsors.stream()
+                .map(sponsorMapper::toEntity)
+                .collect(Collectors.toSet());
+
+        event.setSponsors(updatedSponsors);
+        Set<Sponsor> savedSponsors = new HashSet<>(sponsorRepository.saveAll(updatedSponsors));
+        event.setSponsors(savedSponsors);
 
         return eventMapper.toDto(event);
     }
