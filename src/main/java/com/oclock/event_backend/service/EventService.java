@@ -17,6 +17,7 @@ public interface EventService {
     EventResponseDto updateEventById(Long eventId, UpdateEventDto eventDto);
     EventResponseDto updateSponsors(Long eventId, Set<SponsorDto> sponsors);
     EventResponseDto updateEventLocation(Long eventId, EventLocationDto locationDto);
+    EventResponseDto addSponsorsToEvent(Long eventId, Set<SponsorDto> sponsors);
     void deleteManagerEventById(Long eventId, UserDetails currentUser);
     void deleteEventById(Long eventId);
 }
