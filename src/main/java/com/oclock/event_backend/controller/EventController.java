@@ -99,6 +99,16 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 
+    @PatchMapping("/event/{eventId}/add-sponsors")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<EventResponseDto> addSponsorsToEvent(
+            @PathVariable Long eventId,
+            @RequestBody Set<SponsorDto> sponsors
+    ) {
+        EventResponseDto event = eventService.addSponsorsToEvent(eventId, sponsors);
+        return ResponseEntity.status(HttpStatus.OK).body(event);
+    }
+
     @DeleteMapping("/event/{eventId}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<Void> deleteManagerEventById(

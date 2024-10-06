@@ -200,6 +200,32 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventResponseDto addSponsorsToEvent(Long eventId, Set<SponsorDto> sponsors) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        Set<Sponsor> existingSponsors = event.getSponsors();
+        Set<Sponsor> newSponsors = sponsors.stream()
+                .map(sponsorDto -> {
+                    if (sponsorDto.id() != null) {
+                        return sponsorRepository.findById(sponsorDto.id())
+                                .orElseGet(() -> sponsorRepository.save(sponsorMapper.toEntity(sponsorDto)));
+                    } else {
+                        return sponsorRepository.save(sponsorMapper.toEntity(sponsorDto));
+                    }
+                })
+                .collect(Collectors.toSet());
+
+
+        existingSponsors.addAll(newSponsors);
+        event.setSponsors(existingSponsors);
+
+        Event updatedEvent = eventRepository.save(event);
+
+        return eventMapper.toDto(updatedEvent);
+    }
+
+    @Override
     public void deleteManagerEventById(Long eventId, UserDetails currentUser) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
