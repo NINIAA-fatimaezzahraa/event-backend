@@ -89,6 +89,16 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(event);
     }
 
+    @PatchMapping("/event/{eventId}/location")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<EventResponseDto> updateEventLocation(
+            @PathVariable Long eventId,
+            @RequestBody EventLocationDto locationDto
+    ) {
+        EventResponseDto event = eventService.updateEventLocation(eventId, locationDto);
+        return ResponseEntity.status(HttpStatus.OK).body(event);
+    }
+
     @DeleteMapping("/event/{eventId}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<Void> deleteManagerEventById(

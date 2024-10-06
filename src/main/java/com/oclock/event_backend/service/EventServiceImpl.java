@@ -1,10 +1,7 @@
 package com.oclock.event_backend.service;
 
 import com.oclock.event_backend.domain.*;
-import com.oclock.event_backend.dto.CreateEventDto;
-import com.oclock.event_backend.dto.EventResponseDto;
-import com.oclock.event_backend.dto.SponsorDto;
-import com.oclock.event_backend.dto.UpdateEventDto;
+import com.oclock.event_backend.dto.*;
 import com.oclock.event_backend.exception.CustomDatabaseException;
 import com.oclock.event_backend.exception.FunctionalException;
 import com.oclock.event_backend.exception.ResourceNotFoundException;
@@ -183,6 +180,21 @@ public class EventServiceImpl implements EventService {
         event.setSponsors(updatedSponsors);
         Set<Sponsor> savedSponsors = new HashSet<>(sponsorRepository.saveAll(updatedSponsors));
         event.setSponsors(savedSponsors);
+
+        return eventMapper.toDto(event);
+    }
+
+    @Override
+    public EventResponseDto updateEventLocation(Long eventId, EventLocationDto locationDto) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        EventLocation updatedLocation = eventLocationRepository.findById(locationDto.id())
+                .map(existingLocation -> eventLocationMapper.updateEntity(existingLocation, locationDto))
+                .orElseGet(() -> eventLocationMapper.toEntity(locationDto));
+
+        EventLocation savedLocation = eventLocationRepository.save(updatedLocation);
+        event.setLocation(savedLocation);
 
         return eventMapper.toDto(event);
     }

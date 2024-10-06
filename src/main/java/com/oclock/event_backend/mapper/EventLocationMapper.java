@@ -27,4 +27,15 @@ public class EventLocationMapper {
                 .postalCode(location.getPostalCode())
                 .build();
     }
+
+    public EventLocation updateEntity(EventLocation locationDb, EventLocationDto request) {
+        return EventLocation.builder()
+                .id(request.id())
+                .name(request.name() != null ? request.name() : locationDb.getName())
+                .address(request.address() != null ? request.address() : locationDb.getAddress())
+                .city(request.city() != null ? request.city() : locationDb.getCity())
+                .country(request.country() != null ? request.country() : locationDb.getCountry())
+                .postalCode(request.postalCode() != null ? request.postalCode() : locationDb.getPostalCode())
+                .build();
+    }
 }

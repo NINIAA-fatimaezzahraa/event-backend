@@ -1,9 +1,6 @@
 package com.oclock.event_backend.service;
 
-import com.oclock.event_backend.dto.CreateEventDto;
-import com.oclock.event_backend.dto.EventResponseDto;
-import com.oclock.event_backend.dto.SponsorDto;
-import com.oclock.event_backend.dto.UpdateEventDto;
+import com.oclock.event_backend.dto.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -19,6 +16,7 @@ public interface EventService {
     Set<EventResponseDto> getEventsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     EventResponseDto updateEventById(Long eventId, UpdateEventDto eventDto);
     EventResponseDto updateSponsors(Long eventId, Set<SponsorDto> sponsors);
+    EventResponseDto updateEventLocation(Long eventId, EventLocationDto locationDto);
     void deleteManagerEventById(Long eventId, UserDetails currentUser);
     void deleteEventById(Long eventId);
 }
