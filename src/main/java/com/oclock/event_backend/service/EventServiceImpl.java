@@ -12,6 +12,7 @@ import com.oclock.event_backend.repository.EventLocationRepository;
 import com.oclock.event_backend.repository.EventRepository;
 import com.oclock.event_backend.repository.SponsorRepository;
 import com.oclock.event_backend.repository.UserRepository;
+import com.oclock.event_backend.util.APIsErrorCodesConstants;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,14 +76,16 @@ public class EventServiceImpl implements EventService {
             Event savedEvent = eventRepository.save(event);
             return eventMapper.toDto(savedEvent);
         } catch (DataIntegrityViolationException e) {
-            throw new CustomDatabaseException("Failed to save event due to database constraints");
+            throw new CustomDatabaseException(APIsErrorCodesConstants.DATABASE_CONSTRAINT_VIOLATION);
         }
     }
 
     @Override
     public EventResponseDto getEventById(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId))
+                );
 
         return eventMapper.toDto(event);
     }
@@ -101,7 +104,7 @@ public class EventServiceImpl implements EventService {
         EventCategory category = EventCategory.fromDisplayName(eventCategory);
 
         if(category == null) {
-            throw new FunctionalException("The category '" + eventCategory + "' does not exist. Please provide a valid event category.");
+            throw new FunctionalException(String.format(APIsErrorCodesConstants.CATEGORY_NOT_FOUND, eventCategory));
         }
 
         Set<Event> event = eventRepository.findByCategory(category);
@@ -151,7 +154,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDto updateEventById(Long eventId, UpdateEventDto eventDto) {
         Event eventDb = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                                String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         Event event = eventMapper.updateEntity(eventDb, eventDto);
         eventRepository.save(event);
@@ -162,14 +167,20 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDto updateSponsors(Long eventId, Set<SponsorDto> sponsors) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                                String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         for (SponsorDto sponsorDto : sponsors) {
             Sponsor sponsor = sponsorRepository.findById(sponsorDto.id())
-                    .orElseThrow(() -> new FunctionalException("Sponsor with id " + sponsorDto.id() + " does not exist."));
+                    .orElseThrow(() -> new FunctionalException(
+                                    String.format(APIsErrorCodesConstants.SPONSOR_NOT_FOUND, sponsorDto.id())
+                    ));
 
             if (!event.getSponsors().contains(sponsor)) {
-                throw new FunctionalException("Sponsor with id " + sponsorDto.id() + " is not associated with this event.");
+                throw new FunctionalException(
+                        String.format(APIsErrorCodesConstants.SPONSOR_NOT_ASSOCIATED, sponsorDto.id())
+                );
             }
         }
 
@@ -187,7 +198,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDto updateEventLocation(Long eventId, EventLocationDto locationDto) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         EventLocation updatedLocation = eventLocationRepository.findById(locationDto.id())
                 .map(existingLocation -> eventLocationMapper.updateEntity(existingLocation, locationDto))
@@ -202,7 +215,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDto addSponsorsToEvent(Long eventId, Set<SponsorDto> sponsors) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         Set<Sponsor> existingSponsors = event.getSponsors();
         Set<Sponsor> newSponsors = sponsors.stream()
@@ -228,12 +243,16 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventResponseDto removeSponsorsFromEvent(Long eventId, Set<Long> sponsorIds) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         Set<Sponsor> sponsorsToRemove = sponsorIds.stream()
                 .map(sponsorId -> sponsorRepository.findById(sponsorId)
-                        .orElseThrow(() -> new FunctionalException("Sponsor with id " + sponsorId + " does not exist.")))
-                .collect(Collectors.toSet());
+                        .orElseThrow(() -> new FunctionalException(
+                                String.format(APIsErrorCodesConstants.SPONSOR_NOT_FOUND, sponsorId)
+                        ))
+                ).collect(Collectors.toSet());
 
         event.getSponsors().removeAll(sponsorsToRemove);
 
@@ -245,10 +264,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteManagerEventById(Long eventId, UserDetails currentUser) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         if (!event.getManager().getEmail().equals(currentUser.getUsername())) {
-            throw new BadCredentialsException("You are not authorized to delete this event.");
+            throw new BadCredentialsException(APIsErrorCodesConstants.NOT_AUTHORIZED_TO_DELETE_EVENT);
         }
 
         eventRepository.deleteById(eventId);
@@ -257,23 +278,27 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteEventById(Long eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.EVENT_NOT_FOUND, eventId)
+                ));
 
         eventRepository.delete(event);
     }
 
     private void validateDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         if (startDate == null || endDate == null) {
-            throw new FunctionalException("Both startDate and endDate must be provided.");
+            throw new FunctionalException(APIsErrorCodesConstants.MANDATORY_DATE_PROVIDE);
         }
 
         if (startDate.isAfter(endDate)) {
-            throw new FunctionalException("startDate must be before endDate.");
+            throw new FunctionalException(APIsErrorCodesConstants.START_DATE_AFTER_END_DATE);
         }
     }
 
     public User getUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(APIsErrorCodesConstants.USER_NOT_FOUND, email)
+                ));
     }
 }
