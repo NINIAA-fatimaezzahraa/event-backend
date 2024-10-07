@@ -15,6 +15,17 @@ public final class APIsErrorCodesConstants {
     public static final String INVALID_REFRESH_TOKEN = "Invalid refresh token.";
     public static final String EXPIRED_REFRESH_TOKEN = "Expired refresh token.";
 
+    // ################# Event related error messages ##################
+    public static final String EVENT_NOT_FOUND = "Event not found with id: %s";
+    public static final String USER_NOT_FOUND = "User not found with email: %s";
+    public static final String CATEGORY_NOT_FOUND = "The category '%s' does not exist. Please provide a valid event category.";
+    public static final String SPONSOR_NOT_FOUND = "Sponsor with id %s does not exist.";
+    public static final String SPONSOR_NOT_ASSOCIATED = "Sponsor with id %s is not associated with this event.";
+    public static final String NOT_AUTHORIZED_TO_DELETE_EVENT = "You are not authorized to delete this event.";
+    public static final String MANDATORY_DATE_PROVIDE = "Both startDate and endDate must be provided.";
+    public static final String START_DATE_AFTER_END_DATE = "startDate must be before endDate.";
+    public static final String DATABASE_CONSTRAINT_VIOLATION = "Failed to save event due to database constraints";
+
     private APIsErrorCodesConstants() {
         // Private constructor to prevent instantiation
     }
