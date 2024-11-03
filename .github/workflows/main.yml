@@ -47,7 +47,8 @@ jobs:
           password: Nd-123456
 
       - name: Build Docker image
-        run: docker build -t niniaa/event-backend:latest .
+        run: docker build -t niniaa/event-backend:latest -f Dockerfile.prod .
+
 
       - name: Push Docker image to DockerHub
         run: docker push niniaa/event-backend:latest
