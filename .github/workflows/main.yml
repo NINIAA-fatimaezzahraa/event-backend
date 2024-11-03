@@ -31,3 +31,23 @@ jobs:
       # Step 4: Run Tests using the test profile
       - name: Run Tests
         run: mvn test -Dspring.profiles.active=test
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: niniaa
+          password: Nd-123456
+
+      - name: Build Docker image
+        run: docker build -t niniaa/event-backend:latest .
+
+      - name: Push Docker image to DockerHub
+        run: docker push niniaa/event-backend:latest
