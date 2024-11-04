@@ -36,6 +36,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/webjars/**",
+            "/actuator/prometheus",
             "/swagger-ui.html"
     };
 
