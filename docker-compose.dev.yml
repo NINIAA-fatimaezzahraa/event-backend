@@ -6,9 +6,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/eventdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/event-db
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=secret
+      - SPRING_DATASOURCE_PASSWORD=postgres
     depends_on:
       - database
     volumes:
@@ -31,13 +31,33 @@ services:
   database:
     image: postgres:13
     environment:
-      POSTGRES_DB: eventdb
+      POSTGRES_DB: event-db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     networks:
       - app-network
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=12345678
+    networks:
+      - app-network
+    depends_on:
+      - prometheus
 
 networks:
   app-network:
