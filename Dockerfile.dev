@@ -1,5 +1,5 @@
 # Stage 1: Build environment
-FROM maven:3.8.4-openjdk-17 AS build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copy the Maven wrapper and source code to the container
@@ -12,7 +12,7 @@ RUN chmod +x ./mvnw
 RUN ./mvnw dependency:resolve
 
 # Use an official JDK image as the base
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:21-jdk
 
 # Set a working directory
 WORKDIR /app

@@ -1,9 +1,16 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'java-21'
+    }
+
     environment {
         DOCKER_IMAGE = 'event-backend'
         DOCKER_TAG = 'latest'
+        DOCKERFILE = 'Dockerfile.prod'
+        JAVA_HOME = tool('java-21')
+        PATH = "${JAVA_HOME}/bin:${PATH}"
     }
 
     stages {
@@ -13,15 +20,23 @@ pipeline {
             }
         }
 
+        stage('Run Unit Tests') {
+            steps {
+                sh 'chmod +x ./mvnw'
+                sh './mvnw test'
+            }
+        }
+
         stage('Build Backend') {
             steps {
+                sh 'chmod +x ./mvnw'
                 sh './mvnw clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
+                sh 'docker build -f $DOCKERFILE -t $DOCKER_IMAGE:$DOCKER_TAG .'
             }
         }
 
@@ -37,6 +52,9 @@ pipeline {
     post {
         failure {
             echo "Build failed"
+        }
+        success {
+            echo "Build successful"
         }
     }
 }
