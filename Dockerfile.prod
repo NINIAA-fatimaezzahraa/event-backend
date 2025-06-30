@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Copy the Spring Boot JAR file to the container
 # COPY target/event-backend-0.0.1-SNAPSHOT.jar /app.jar
-COPY --from=build /app/target/event-backend-0.0.1-SNAPSHOT.jar /app.jar
+COPY --from=build /app/target/*.jar /app.jar
 
 # Expose the port Spring Boot runs on
 EXPOSE 8080
