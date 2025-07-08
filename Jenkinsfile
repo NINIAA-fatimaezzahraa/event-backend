@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         jdk 'java-21'
+        maven 'maven-3.9.6'
     }
 
     environment {
@@ -17,6 +18,14 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/NINIAA-fatimaezzahraa/event-backend.git'
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn clean verify sonar:sonar'
+                }
             }
         }
 
